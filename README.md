@@ -1,3 +1,6 @@
+[![Docker Pulls](https://img.shields.io/docker/pulls/thefriday/stack-deploy.svg)](https://hub.docker.com/r/thefriday/stack-deploy/)
+[![](https://images.microbadger.com/badges/image/thefriday/stack-deploy.svg)](https://microbadger.com/images/thefriday/stack-deploy "Get your own image badge on microbadger.com")
+
 # Stack deploy
 
 Command line application for deploying stack and updating services in Docker 
