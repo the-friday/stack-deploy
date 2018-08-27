@@ -5,7 +5,7 @@ swarm clusters under [Portainer](https://github.com/portainer/portainer) control
 
 Supports the exit codes (`0` for successful and `1` for error), you can use it on ci/cd systems.
 
-You can use it from cloned source as `npm start <command>` or as docker container `docker run`
+You can use it from cloned source as `npm start <command>` or as docker container `docker run --rm thefriday/stack-deploy <command>`
 
 ## Supported commands
 
