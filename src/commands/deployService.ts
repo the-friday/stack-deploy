@@ -67,7 +67,7 @@ export class DeployService extends Command {
       type:        String,
       description: 'New image',
       group:       'required',
-      typeLabel:   '<image url>'
+      typeLabel:   '<image>'
     },
     {
       name:        'help',
@@ -77,48 +77,49 @@ export class DeployService extends Command {
   ];
   client!: PortainerClient;
 
-  async run(args: string[]): Promise<any> {
-    const {_all: {help, env}, required} = commandLineArgs(this.args, {argv: args});
+  async run(argv: string[]): Promise<any> {
+    const {_all: {help,}, _all: args, required} = commandLineArgs(this.args, {argv});
     // validate input
     const emptyArguments = this.emptyArguments(required);
-    if (emptyArguments) {
-      console.log(chalk.red(`\nFields "${emptyArguments}" are empty, but required`));
+    if (emptyArguments || help) {
+      if (emptyArguments) {
+        console.log(chalk.red(`\nFields "${emptyArguments}" are empty, but required`));
+      }
       console.log(commandLineUsage(this.getHelp()));
       return;
     }
 
     const authProgress = Ora('Authenticating').start();
-    this.client = new PortainerClient(required.url);
+    this.client = new PortainerClient(args.url);
     try {
-      await this.client.auth(required.user, required.password);
+      await this.client.auth(args.user, args.password);
       authProgress.succeed('Authenticated');
     } catch (e) {
       authProgress.fail('Authentication failed');
       throw e;
     }
 
-    if (required.stack) {
+    if (args.stack) {
       const stacks = new StacksRepository(this.client);
       const stacksList = await stacks.getStacksList();
-      const currentStack = stacksList.filterByName(required.stack);
+      const currentStack = stacksList.filterByName(args.stack);
       // If stack already published - update him
       if (!currentStack) {
-        throw new Error(`Stack with name "${required.stack}" not found`);
+        throw new Error(`Stack with name "${args.stack}" not found`);
       }
     }
-
-    const serviceName = this.getServiceName(required);
+    const serviceName = this.getServiceName(args);
     const filter = new Filter();
     filter.add('name', serviceName);
     const data = await this.client.execute<ServiceListResponse>(
-      new ServiceListRequest(required.endpoint, filter),
+      new ServiceListRequest(args.endpoint, filter),
       ServiceListResponse
     );
     const currentService = data.data.length ? new Service(data.data[0]) : null;
     if (!currentService) {
       throw new Error(`Service "${serviceName}" not found"`);
     }
-    const result = await this.updateService(currentService, required.image, required.endpoint);
+    const result = await this.updateService(currentService, args.image, args.endpoint);
   }
 
   getServiceName(params: any) {
