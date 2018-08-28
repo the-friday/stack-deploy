@@ -1,6 +1,6 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import {Updater} from './updater';
-import chalk     from 'chalk';
+import chalk from 'chalk';
 
 process.on('uncaughtException', (err) => {
   console.error(chalk.redBright(err.message));
@@ -17,5 +17,13 @@ process.on('unhandledRejection', (reason) => {
   process.exit(1);
 });
 
-const updater = new Updater(process.argv);
-updater.run();
+let argv = process.argv;
+// if process started from NPM - get args from npm
+if (process.env.npm_config_argv) {
+  const npmArgv = JSON.parse(process.env.npm_config_argv);
+  argv = npmArgv.original;
+  // remove first argument
+  argv.shift();
+}
+const updater = new Updater();
+updater.run(argv);

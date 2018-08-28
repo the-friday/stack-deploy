@@ -21,8 +21,8 @@ export class Help extends Command {
     this.commands = commands;
   }
 
-  async run(args: string[]) {
-    const parsedArgs = commandLineArgs(this.args, {argv: args});
+  async run(argv: string[]) {
+    const parsedArgs = commandLineArgs(this.args, {argv});
     const commandName = parsedArgs.command;
     if (commandName && commandName !== 'help') {
       const command = this.commands.get(commandName);

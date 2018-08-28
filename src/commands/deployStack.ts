@@ -79,8 +79,8 @@ export class DeployStack extends Command {
   ];
   client!: PortainerClient;
 
-  async run(args: string[]) {
-    const {_all: {help, env}, required} = commandLineArgs(this.args, {argv: args});
+  async run(argv: string[]) {
+    const {_all: {help, env}, required} = commandLineArgs(this.args, {argv});
     // validate input
     const emptyArguments = this.emptyArguments(required);
     if (emptyArguments) {

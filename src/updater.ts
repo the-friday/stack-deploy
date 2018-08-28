@@ -9,10 +9,8 @@ import {Help} from './commands/help';
 
 export class Updater {
   commands = new Map();
-  args: string[] = [];
 
-  constructor(args: string[]) {
-    this.args = args;
+  constructor() {
     // register commands
     this.addCommand(new DeployStack());
     this.addCommand(new DeployService());
@@ -23,9 +21,12 @@ export class Updater {
     this.commands.set(command.name, command);
   }
 
-  run() {
+  run(argv: string[]) {
     const helpCommand = this.commands.get('help');
-    const parsedArgs = commandLineArgs([{name: 'command', defaultOption: true}], {stopAtFirstUnknown: true});
+    const parsedArgs = commandLineArgs([{name: 'command', defaultOption: true}], {
+      argv,
+      stopAtFirstUnknown: true
+    });
     const command = this.commands.get(parsedArgs.command);
     const args = parsedArgs._unknown || [];
     if (!command) {
