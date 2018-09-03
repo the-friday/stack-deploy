@@ -84,6 +84,7 @@ export class DeployService extends Command {
     if (emptyArguments || help) {
       if (emptyArguments) {
         console.log(chalk.red(`\nFields "${emptyArguments}" are empty, but required`));
+        throw new Error('REQUIRED_FIELDS_ARE_EMPTY');
       }
       console.log(commandLineUsage(this.getHelp()));
       return;

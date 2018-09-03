@@ -83,10 +83,13 @@ export class DeployStack extends Command {
     const {_all: {help, env}, required} = commandLineArgs(this.args, {argv});
     // validate input
     const emptyArguments = this.emptyArguments(required);
-    if (emptyArguments) {
-      console.log(chalk.red(`\nFields "${emptyArguments}" are empty, but required`));
+    if (emptyArguments || help) {
+      if (emptyArguments) {
+        console.log(chalk.red(`\nFields "${emptyArguments}" are empty, but required`));
+        throw new Error('REQUIRED_FIELDS_ARE_EMPTY');
+      }
+
       console.log(commandLineUsage(this.getHelp()));
-      return;
     }
 
     const authProgress = Ora('Authenticating').start();
