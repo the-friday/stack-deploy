@@ -34,7 +34,8 @@ export class HttpClient {
 
       request.end((err: ResponseError, response: SAResponse) => {
         if (err) {
-          console.error(chalk.redBright(response.text));
+          const message = `Error executing request "${err.message}"`;
+          console.error(chalk.redBright(message));
           throw err;
         } else {
           resolve(new responseType(response.body));
