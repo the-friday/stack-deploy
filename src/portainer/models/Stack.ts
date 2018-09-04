@@ -4,8 +4,8 @@ export const enum StackType {
 }
 
 export class StackEnv {
-    'Name': string;
-    'Value': string;
+    'name': string;
+    'value': string;
 }
 
 export class Stack {

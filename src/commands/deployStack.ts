@@ -163,10 +163,12 @@ export class DeployStack extends Command {
     const envMap = new Map();
     const env: StackEnv[] = [];
     if (deployedVars.length) {
-      deployedVars.forEach(({Name, Value}) => envMap.set(Name, Value));
+      deployedVars.forEach(({name, value}) => envMap.set(name, value));
     }
     if (newVars.length) {
-      newVars.map(string => string.split('=')).forEach(([name, value]) => envMap.set(name, value));
+      newVars
+        .map(string => string.split('='))
+        .forEach(([name, value]) => envMap.set(name, value));
     }
     const variables = Array.from(envMap.keys());
     const unusedVars = requiredVars.filter(v => variables.indexOf(v) === -1);
@@ -175,7 +177,7 @@ export class DeployStack extends Command {
       throw new Error('Fill all vars');
     }
     // create objects with values
-    envMap.forEach((Value, Name) => env.push({Name, Value}));
+    envMap.forEach((value, name) => env.push({name, value}));
 
     return env;
   }
