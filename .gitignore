@@ -75,3 +75,5 @@ typings/
 .serverless
 
 .idea
+build
+docker-stack.yml
