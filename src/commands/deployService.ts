@@ -151,13 +151,12 @@ export class DeployService extends Command {
         await this.checkUpdateStatus(service, endpointId);
       } else {
         console.warn(ora.warn(`Warning when updating service "${service.getName()}": ${result.response.Warnings}`));
-        console.warn(result.response);
+        console.warn(result);
       }
 
       ora.succeed(`Service "${service.getName()}" successfully updated`);
     } catch (e) {
-      ora.fail('Service update failing');
-      throw e;
+      ora.fail(e);
     }
   }
 
