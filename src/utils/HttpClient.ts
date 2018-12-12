@@ -24,7 +24,7 @@ export class HttpClient {
 
   public async execute<T extends Response>(params: Request, responseType: { new(data: any): T }): Promise<T> {
     return new Promise<T>((resolve) => {
-      let request = this.prepareRequest(params.type, params.path, params.pathParams);
+      let request = this.prepareRequest(params);
       if (params.body) {
         request = request.send(params.body);
       }
@@ -44,24 +44,30 @@ export class HttpClient {
     });
   }
 
-  private prepareRequest(type: RequestType, path: string, pathParams: PathParams): SuperAgentRequest {
-    let request: SuperAgentRequest;
-    if (type === RequestType.POST) {
-      request = this.client
-        .post(this.getUrl(path, pathParams));
-    } else if (type === RequestType.PUT) {
-      request = this.client
-        .put(this.getUrl(path, pathParams));
-    } else {
-      request = this.client.get(this.getUrl(path, pathParams));
+  private prepareRequest(request: Request): SuperAgentRequest {
+    let superAgentRequest: SuperAgentRequest;
+    const url = this.getUrl(request.path, request.pathParams);
+    switch (request.type) {
+      case RequestType.POST:
+        superAgentRequest = this.client.post(url);
+        break;
+      case RequestType.PUT:
+        superAgentRequest = this.client.put(url);
+        break;
+      default:
+        superAgentRequest = this.client.get(url);
     }
 
     if (this.token) {
-      request = request.set('Authorization', this.token);
+      superAgentRequest = superAgentRequest.set('Authorization', this.token);
     }
-
-    request = request.set('Accept', 'application/json').set('Content-Type', 'application/json');
-    return request;
+    if (request.isJSON) {
+      superAgentRequest = superAgentRequest.set('Accept', 'application/json').set('Content-Type', 'application/json');
+    }else{
+      superAgentRequest = superAgentRequest.responseType('text')
+    }
+    
+    return superAgentRequest;
   }
 
   private getUrl(path: string, pathParams: PathParams): string {

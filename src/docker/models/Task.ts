@@ -12,7 +12,9 @@ export type Task = {
     Timestamp: string,
     State: string,
     Message: string,
-    ContainerStatus: {},
+    ContainerStatus: {
+      ContainerID: string
+    },
     Err: string
   },
   DesiredState: TaskStates

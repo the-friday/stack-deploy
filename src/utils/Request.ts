@@ -21,6 +21,7 @@ export abstract class Request {
   public pathParams: PathParams = {};
   public body: Params | undefined;
   public query!: any;
+  public isJSON: boolean = true;
 
   setParam(name: string, value: any): void {
     this.pathParams[name] = value;

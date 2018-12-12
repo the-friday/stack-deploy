@@ -10,7 +10,9 @@ import {
   ServiceListRequest,
   ServiceListResponse,
   ServiceUpdateRequest,
-  ServiceUpdateResponse
+  ServiceUpdateResponse,
+  ServiceLogsRequest,
+  ServiceLogsResponse
 } from '../docker/api/Service';
 import {Service} from '../docker/models/Service';
 import {TaskRequest, TaskResponse} from '../docker/api/Task';
@@ -156,7 +158,11 @@ export class DeployService extends Command {
 
       ora.succeed(`Service "${service.getName()}" successfully updated`);
     } catch (e) {
-      ora.fail(e);
+      ora.fail(e.message);
+      if (Array.isArray(e.logs)) {
+        ora.warn('Last logs:');
+        e.logs.forEach((row: string) => console.log(row));
+      }
     }
   }
 
@@ -178,7 +184,17 @@ export class DeployService extends Command {
         taskId = task.ID;
         if (task.DesiredState === TaskStates.shutdown) {
           clearInterval(interval);
-          reject(`Update failed "${task.Status.Err || 'canceled'}"`);
+          let logs = null;
+          if (task.Status.ContainerStatus.ContainerID) {
+            logs = await this.client.execute<ServiceLogsResponse>(
+              new ServiceLogsRequest(endpointId, task.Status.ContainerStatus.ContainerID),
+              ServiceLogsResponse
+            );
+          }
+          reject({
+            message: `Update failed "${task.Status.Err || 'canceled'}"`,
+            logs:    logs && logs.response
+          });
         } else if (task.Status.Message === 'started' && task.Status.State === 'running') {
           clearInterval(interval);
           resolve(true);

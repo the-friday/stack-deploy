@@ -41,3 +41,32 @@ export class ServiceUpdateResponse implements Response {
     this.response = response;
   }
 }
+
+export class ServiceLogsRequest extends Request {
+  type = RequestType.GET;
+  path = '/endpoints/{endpointId}/docker/containers/{containerId}/logs';
+  isJSON = false;
+
+  constructor(endpointId: number, containerId: string) {
+    super();
+    this.setParam('endpointId', endpointId);
+    this.setParam('containerId', containerId);
+    this.query = {
+      stderr:     1,
+      stdout:     1,
+      tail:       50,
+      timestamps: 0
+    };
+  }
+}
+
+export class ServiceLogsResponse implements Response {
+  response: Array<string>;
+
+  constructor(response: any) {
+    this.response = response
+      .toString()
+      .replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
+      .split('\n');
+  }
+}
